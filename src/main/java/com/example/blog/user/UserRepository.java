@@ -15,11 +15,19 @@ public class UserRepository {
         return users.get(id);
     }
 
+    public Boolean existsById(Long id) {
+        return users.get(id) != null;
+    }
+
     public List<User> findAll() {
         return new ArrayList<>(users.values());
     }
 
     public void save(User user) {
         users.put(user.getId(), user);
+    }
+
+    public boolean existsByName(String name) {
+        return users.values().stream().anyMatch(user -> user.getName().equals(name));
     }
 }

@@ -1,31 +1,36 @@
 package com.example.blog.user;
 
 import com.example.blog.user.form.UserForm;
+import com.example.blog.user.validator.UserFormValidator;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.Errors;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
-import java.util.ArrayList;
+import javax.validation.Valid;
 import java.util.List;
 
 @Controller
+@RequiredArgsConstructor
 public class UserController {
 
     private final UserService userService;
+    private final UserFormValidator userFormValidator;
 
-    public UserController(UserService userService) {
-        this.userService = userService;
+    @InitBinder("userForm")
+    public void initBinderUserForm(WebDataBinder webDataBinder) {
+        webDataBinder.addValidators(userFormValidator);
     }
 
     // 유저 목록 조회
     // GET /users
     @GetMapping("/users")
     public String index(Model model) {
-        userService.save(new User(1L, "하이", "하이"));
-        userService.save(new User(2L, "하이1", "하이1"));
-
         List<User> users = userService.findAll();
         model.addAttribute("users", users);
 
@@ -52,7 +57,11 @@ public class UserController {
     // 유저 생성
     // POST /new-user
     @PostMapping("/new-user")
-    public String create(UserForm userForm) {
+    public String create(@Valid UserForm userForm, Errors errors) {
+        if (errors.hasErrors()) {
+            return "users/new-user";
+        }
+
         User user = new User(
                 userForm.getId(),
                 userForm.getName(),
