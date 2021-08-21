@@ -1,4 +1,4 @@
-package com.example.blog.user;
+package com.example.blog.comment;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -7,8 +7,7 @@ import lombok.Setter;
 
 @Getter @Setter
 @AllArgsConstructor @NoArgsConstructor
-public class User {
+public class Comment {
     private Long id;
-    private String name;
-    private String type;
+    private String content;
 }
