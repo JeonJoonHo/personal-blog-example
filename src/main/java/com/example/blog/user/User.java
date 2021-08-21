@@ -1,11 +1,10 @@
 package com.example.blog.user;
 
+import com.example.blog.post.Post;
 import lombok.*;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Getter @Setter
@@ -16,4 +15,7 @@ public class User {
     private Long id;
     private String name;
     private String type;
+
+    @OneToMany(mappedBy = "user")
+    private List<Post> posts;
 }
