@@ -7,6 +7,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.ArrayList;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -42,7 +44,7 @@ public class UserControllerTest {
                 .param("type", "type")
         ).andExpect(redirectedUrl("/users"));
 
-        User user = userRepository.findById(1L);
+        User user = userRepository.findById(1L).get();
         assertNotNull(user);
         assertThat(user.getName()).isEqualTo("new_name");
     }
@@ -52,22 +54,18 @@ public class UserControllerTest {
     @DisplayName("유저 생성 - 실패")
     void createUserFail() throws Exception {
         mockMvc.perform(post("/new-user")
-                .param("name", "new_name")
                 .param("type", "type")
         )
                 .andExpect(status().isOk())
                 .andExpect(view().name("users/new-user"))
                 .andExpect(model().hasErrors());
-
-        User user = userRepository.findById(1L);
-        assertNull(user);
     }
 
     // 유저 수정 성공
     @Test
     @DisplayName("유저 수정 - 성공")
     void editUserSuccess() throws Exception {
-        User newUser = new User(1L, "name", "type");
+        User newUser = new User(1L, "name", "type", new ArrayList<>());
         userRepository.save(newUser);
 
         mockMvc.perform(post("/users/edit-user/" + newUser.getId())
@@ -75,7 +73,7 @@ public class UserControllerTest {
                 .param("type", "type")
         ).andExpect(redirectedUrl("/users"));
 
-        User user = userRepository.findById(1L);
+        User user = userRepository.findById(1L).get();
         assertNotNull(user);
         assertThat(user.getName()).isEqualTo("edit_name");
     }
@@ -84,7 +82,7 @@ public class UserControllerTest {
     @Test
     @DisplayName("유저 조회 성공")
     void findUser() throws Exception {
-        User newUser = new User(1L, "new_name", "type");
+        User newUser = new User(1L, "new_name", "type", new ArrayList<>());
         userRepository.save(newUser);
 
         mockMvc.perform(get("/users/" + newUser.getId()))
