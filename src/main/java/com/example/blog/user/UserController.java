@@ -62,11 +62,10 @@ public class UserController {
             return "users/new-user";
         }
 
-        User user = new User(
-                userForm.getId(),
-                userForm.getName(),
-                userForm.getType()
-        );
+        User user = User.builder()
+                .name(userForm.getName())
+                .type(userForm.getType())
+                .build();
         userService.save(user);
 
         return "redirect:/users";
@@ -88,10 +87,7 @@ public class UserController {
 
     @PostMapping("/users/edit-user/{userId}")
     public String editUser(@PathVariable Long userId, UserForm userForm) {
-        User user = userService.findById(userId);
-        user.setId(userForm.getId());
-        user.setName(userForm.getName());
-        user.setType(userForm.getType());
+        userService.update(userId, userForm);
 
         return "redirect:/users";
     }
