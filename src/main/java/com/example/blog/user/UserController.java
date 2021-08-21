@@ -1,5 +1,7 @@
 package com.example.blog.user;
 
+import com.example.blog.post.Post;
+import com.example.blog.post.PostRepository;
 import com.example.blog.user.form.UserForm;
 import com.example.blog.user.validator.UserFormValidator;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.List;
 
 @Controller
@@ -21,6 +24,8 @@ public class UserController {
 
     private final UserService userService;
     private final UserFormValidator userFormValidator;
+
+    private final PostRepository postRepository;
 
     @InitBinder("userForm")
     public void initBinderUserForm(WebDataBinder webDataBinder) {
@@ -44,6 +49,8 @@ public class UserController {
         User user = userService.findById(userId);
         model.addAttribute("user", user);
 
+        user.getPosts();
+
         return "users/show";
     }
 
@@ -65,9 +72,18 @@ public class UserController {
         User user = new User(
                 userForm.getId(),
                 userForm.getName(),
-                userForm.getType()
+                userForm.getType(),
+                new ArrayList<>()
         );
         userService.save(user);
+
+        Post post = new Post(
+                null,
+                "title",
+                "description",
+                user
+        );
+        postRepository.save(post);
 
         return "redirect:/users";
     }
@@ -88,11 +104,7 @@ public class UserController {
 
     @PostMapping("/users/edit-user/{userId}")
     public String editUser(@PathVariable Long userId, UserForm userForm) {
-        User user = userService.findById(userId);
-        user.setId(userForm.getId());
-        user.setName(userForm.getName());
-        user.setType(userForm.getType());
-
+        userService.update(userId, userForm);
         return "redirect:/users";
     }
 }
