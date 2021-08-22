@@ -4,7 +4,7 @@
 <body>
     유저 수정
 
-    <form method="post" th:action="@{/users/edit-user/{id}(id = ${userForm.id})}" th:object="${userForm}">
+    <form method="post" th:action="@{/edit-user/{id}(id = ${userForm.id})}" th:object="${userForm}">
         <label for="name">이름 : </label>
         <input type="text" name="name" id="name" th:field="*{name}">
 

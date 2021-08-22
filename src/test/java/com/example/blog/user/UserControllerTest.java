@@ -28,9 +28,9 @@ public class UserControllerTest {
     @Test
     @DisplayName("유저 생성 폼 조회")
     void createUserForm() throws Exception {
-        mockMvc.perform(get("/users/new-user"))
+        mockMvc.perform(get("/new-user"))
                 .andExpect(status().isOk())
-                .andExpect(view().name("users/new-user"))
+                .andExpect(view().name("user/new"))
                 .andExpect(model().attributeExists("userForm"));
     }
 
@@ -57,7 +57,7 @@ public class UserControllerTest {
                 .param("type", "type")
         )
                 .andExpect(status().isOk())
-                .andExpect(view().name("users/new-user"))
+                .andExpect(view().name("user/new"))
                 .andExpect(model().hasErrors());
     }
 
@@ -68,7 +68,7 @@ public class UserControllerTest {
         User newUser = new User(1L, "name", "type", new ArrayList<>());
         userRepository.save(newUser);
 
-        mockMvc.perform(post("/users/edit-user/" + newUser.getId())
+        mockMvc.perform(post("/edit-user/" + newUser.getId())
                 .param("name", "edit_name")
                 .param("type", "type")
         ).andExpect(redirectedUrl("/users"));
@@ -87,7 +87,7 @@ public class UserControllerTest {
 
         mockMvc.perform(get("/users/" + newUser.getId()))
                 .andExpect(status().isOk())
-                .andExpect(view().name("users/show"))
+                .andExpect(view().name("user/show"))
                 .andExpect(model().attributeExists("user"));
     }
 }

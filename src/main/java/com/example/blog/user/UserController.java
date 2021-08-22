@@ -39,7 +39,7 @@ public class UserController {
         List<User> users = userService.findAll();
         model.addAttribute("users", users);
 
-        return "users/index";
+        return "user/index";
     }
 
     // 유저 상세 조회
@@ -49,16 +49,14 @@ public class UserController {
         User user = userService.findById(userId);
         model.addAttribute("user", user);
 
-        user.getPosts();
-
-        return "users/show";
+        return "user/show";
     }
 
-    @GetMapping("users/new-user")
+    @GetMapping("/new-user")
     public String newUser(Model model) {
         model.addAttribute("userForm", new UserForm());
 
-        return "users/new-user";
+        return "user/new";
     }
 
     // 유저 생성
@@ -66,7 +64,7 @@ public class UserController {
     @PostMapping("/new-user")
     public String create(@Valid UserForm userForm, Errors errors) {
         if (errors.hasErrors()) {
-            return "users/new-user";
+            return "user/new";
         }
 
         User user = new User(
@@ -90,7 +88,7 @@ public class UserController {
 
     // 유저 수정
     // POST /users/{user_id}
-    @GetMapping("/users/edit-user/{userId}")
+    @GetMapping("/edit-user/{userId}")
     public String editUser(@PathVariable Long userId, Model model) {
         User user = userService.findById(userId);
         model.addAttribute("userForm", new UserForm(
@@ -99,10 +97,10 @@ public class UserController {
                 user.getType()
         ));
 
-        return "users/edit-user";
+        return "user/edit";
     }
 
-    @PostMapping("/users/edit-user/{userId}")
+    @PostMapping("/edit-user/{userId}")
     public String editUser(@PathVariable Long userId, UserForm userForm) {
         userService.update(userId, userForm);
         return "redirect:/users";
