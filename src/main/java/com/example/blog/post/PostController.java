@@ -1,6 +1,8 @@
 package com.example.blog.post;
 
 import com.example.blog.post.form.PostForm;
+import com.example.blog.user.User;
+import com.example.blog.user.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -16,6 +18,7 @@ import javax.validation.Valid;
 public class PostController {
 
     private final PostService postService;
+    private final UserService userService;
 
     @GetMapping("/posts")
     public String index(Model model) {
@@ -45,9 +48,12 @@ public class PostController {
             return "post/new";
         }
 
+        User user = userService.findById(1L);
+
         Post post = Post.builder()
                 .title(postForm.getTitle())
                 .description(postForm.getDescription())
+                .user(user)
                 .build();
         postService.save(post);
 
