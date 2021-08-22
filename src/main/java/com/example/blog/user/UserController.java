@@ -1,7 +1,5 @@
 package com.example.blog.user;
 
-import com.example.blog.post.Post;
-import com.example.blog.post.PostRepository;
 import com.example.blog.user.form.UserForm;
 import com.example.blog.user.validator.UserFormValidator;
 import lombok.RequiredArgsConstructor;
@@ -24,8 +22,6 @@ public class UserController {
 
     private final UserService userService;
     private final UserFormValidator userFormValidator;
-
-    private final PostRepository postRepository;
 
     @InitBinder("userForm")
     public void initBinderUserForm(WebDataBinder webDataBinder) {
@@ -74,14 +70,6 @@ public class UserController {
                 new ArrayList<>()
         );
         userService.save(user);
-
-        Post post = new Post(
-                null,
-                "title",
-                "description",
-                user
-        );
-        postRepository.save(post);
 
         return "redirect:/users";
     }
