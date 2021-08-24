@@ -1,5 +1,8 @@
 package com.example.blog.post;
 
+import com.example.blog.comment.Comment;
+import com.example.blog.comment.CommentService;
+import com.example.blog.comment.form.CommentForm;
 import com.example.blog.post.form.PostForm;
 import com.example.blog.user.User;
 import com.example.blog.user.UserService;
@@ -19,6 +22,7 @@ public class PostController {
 
     private final PostService postService;
     private final UserService userService;
+    private final CommentService commentService;
 
     @GetMapping("/posts")
     public String index(Model model) {
@@ -31,6 +35,7 @@ public class PostController {
     public String show(@PathVariable Long postId, Model model) {
         Post post = postService.findById(postId);
         model.addAttribute("post", post);
+        model.addAttribute("commentForm", new CommentForm());
 
         return "post/show";
     }
@@ -50,12 +55,7 @@ public class PostController {
 
         User user = userService.findById(1L);
 
-        Post post = Post.builder()
-                .title(postForm.getTitle())
-                .description(postForm.getDescription())
-                .user(user)
-                .build();
-        postService.save(post);
+        postService.create(postForm, user);
 
         return "redirect:/posts";
     }
@@ -77,5 +77,19 @@ public class PostController {
     public String edit(@PathVariable Long postId, PostForm postForm) {
         postService.update(postId, postForm);
         return "redirect:/posts";
+    }
+
+    @PostMapping("/posts/{postId}/new-comment")
+    public String create(@PathVariable Long postId, @Valid CommentForm commentForm) {
+        Post post = postService.findById(postId);
+        User user = userService.findById(1L);
+        Comment comment = Comment.builder()
+                .content(commentForm.getContent())
+                .post(post)
+                .user(user)
+                .build();
+        commentService.create(comment);
+
+        return "redirect:/posts/" + post.getId();
     }
 }

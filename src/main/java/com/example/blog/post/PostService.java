@@ -1,6 +1,8 @@
 package com.example.blog.post;
 
+import com.example.blog.comment.Comment;
 import com.example.blog.post.form.PostForm;
+import com.example.blog.user.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,8 +23,13 @@ public class PostService {
         return postRepository.findById(postId).orElseThrow(IllegalArgumentException::new);
     }
 
-    public void save(Post post) {
-        postRepository.save(post);
+    public void create(PostForm postForm, User user) {
+        Post post = Post.builder()
+                .title(postForm.getTitle())
+                .description(postForm.getDescription())
+                .user(user)
+                .build();
+        save(post);
     }
 
     @Transactional
@@ -31,5 +38,9 @@ public class PostService {
 
         post.setTitle(postForm.getTitle());
         post.setDescription(postForm.getDescription());
+    }
+
+    private void save(Post post) {
+        postRepository.save(post);
     }
 }
