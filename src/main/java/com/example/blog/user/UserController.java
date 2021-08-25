@@ -1,6 +1,9 @@
 package com.example.blog.user;
 
+import com.example.blog.user.form.LoginForm;
+import com.example.blog.user.form.SignUpForm;
 import com.example.blog.user.form.UserForm;
+import com.example.blog.user.validator.SignUpFormValidator;
 import com.example.blog.user.validator.UserFormValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -13,7 +16,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import javax.validation.Valid;
-import java.util.ArrayList;
 import java.util.List;
 
 @Controller
@@ -22,14 +24,52 @@ public class UserController {
 
     private final UserService userService;
     private final UserFormValidator userFormValidator;
+    private final SignUpFormValidator signUpFormValidator;
 
     @InitBinder("userForm")
     public void initBinderUserForm(WebDataBinder webDataBinder) {
         webDataBinder.addValidators(userFormValidator);
     }
 
-    // 유저 목록 조회
-    // GET /users
+    @InitBinder("signUpForm")
+    public void initBinderSignUpForm(WebDataBinder webDataBinder) {
+        webDataBinder.addValidators(signUpFormValidator);
+    }
+
+    @GetMapping("/sign-up")
+    public String signUp(Model model) {
+        model.addAttribute("signUpForm", new SignUpForm());
+
+        return "user/sign-up";
+    }
+
+    @PostMapping("/sign-up")
+    public String signUp(@Valid SignUpForm signUpForm, Errors errors) {
+        if (errors.hasErrors()) {
+            return "user/sign-up";
+        }
+
+        User user = userService.createUser(signUpForm);
+        userService.login(user, signUpForm.getPassword());
+
+        return "redirect:/";
+    }
+
+    @GetMapping("/login")
+    public String login(Model model) {
+        model.addAttribute("loginForm", new LoginForm());
+
+        return "user/login";
+    }
+
+//    @PostMapping("/login")
+//    public String login(@Valid LoginForm loginForm) {
+//        User user = userService.findByUsername(loginForm.getNickname());
+//        userService.login(user, loginForm.getPassword());
+//
+//        return "redirect:/";
+//    }
+
     @GetMapping("/users")
     public String index(Model model) {
         List<User> users = userService.findAll();
@@ -38,8 +78,6 @@ public class UserController {
         return "user/index";
     }
 
-    // 유저 상세 조회
-    // GET /users/1
     @GetMapping("/users/{userId}")
     public String show(@PathVariable Long userId, Model model) {
         User user = userService.findById(userId);
@@ -55,27 +93,23 @@ public class UserController {
         return "user/new";
     }
 
-    // 유저 생성
-    // POST /new-user
     @PostMapping("/new-user")
     public String create(@Valid UserForm userForm, Errors errors) {
         if (errors.hasErrors()) {
             return "user/new";
         }
 
-        User user = new User(
-                userForm.getId(),
-                userForm.getName(),
-                userForm.getType(),
-                new ArrayList<>()
-        );
+        User user = User.builder()
+                .name(userForm.getName())
+                .username(userForm.getName())
+                .type("ROLE_USER")
+                .password("root")
+                .build();
         userService.save(user);
 
         return "redirect:/users";
     }
 
-    // 유저 수정
-    // POST /users/{user_id}
     @GetMapping("/edit-user/{userId}")
     public String editUser(@PathVariable Long userId, Model model) {
         User user = userService.findById(userId);
