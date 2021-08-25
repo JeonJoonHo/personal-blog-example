@@ -1,10 +1,12 @@
 package com.example.blog.user;
 
+import lombok.Getter;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 
 import java.util.List;
 
+@Getter
 public class UserAccount extends User {
 
     private com.example.blog.user.User user;

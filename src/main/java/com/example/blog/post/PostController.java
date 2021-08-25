@@ -4,6 +4,7 @@ import com.example.blog.comment.Comment;
 import com.example.blog.comment.CommentService;
 import com.example.blog.comment.form.CommentForm;
 import com.example.blog.post.form.PostForm;
+import com.example.blog.user.CurrentUser;
 import com.example.blog.user.User;
 import com.example.blog.user.UserService;
 import lombok.RequiredArgsConstructor;
@@ -48,12 +49,14 @@ public class PostController {
     }
 
     @PostMapping("/new-post")
-    public String create(@Valid PostForm postForm, Errors errors) {
+    public String create(
+            @CurrentUser User user,
+            @Valid PostForm postForm,
+            Errors errors
+    ) {
         if (errors.hasErrors()) {
             return "post/new";
         }
-
-        User user = userService.findById(1L);
 
         postService.create(postForm, user);
 
@@ -80,9 +83,12 @@ public class PostController {
     }
 
     @PostMapping("/posts/{postId}/new-comment")
-    public String create(@PathVariable Long postId, @Valid CommentForm commentForm) {
+    public String create(
+            @CurrentUser User user,
+            @PathVariable Long postId,
+            @Valid CommentForm commentForm
+    ) {
         Post post = postService.findById(postId);
-        User user = userService.findById(1L);
         Comment comment = Comment.builder()
                 .content(commentForm.getContent())
                 .post(post)
