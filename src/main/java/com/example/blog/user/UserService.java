@@ -50,7 +50,7 @@ public class UserService implements UserDetailsService {
         UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(
                 new UserAccount(user),
                 passwordEncoder.encode(password),
-                List.of(new SimpleGrantedAuthority("ROLE_USER")));
+                List.of(new SimpleGrantedAuthority(user.getType().name())));
         SecurityContextHolder.getContext().setAuthentication(token);
     }
 
@@ -60,7 +60,7 @@ public class UserService implements UserDetailsService {
                 .username(signUpForm.getUsername())
                 .name(signUpForm.getName())
                 .password(encodedPassword)
-                .type("ROLE_USER")
+                .type(UserType.ROLE_USER)
                 .build();
 
         return userRepository.save(user);

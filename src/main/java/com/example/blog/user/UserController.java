@@ -102,7 +102,7 @@ public class UserController {
         User user = User.builder()
                 .name(userForm.getName())
                 .username(userForm.getName())
-                .type("ROLE_USER")
+                .type(UserType.ROLE_USER)
                 .password("root")
                 .build();
         userService.save(user);

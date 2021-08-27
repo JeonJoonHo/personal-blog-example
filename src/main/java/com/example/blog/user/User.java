@@ -17,7 +17,9 @@ public class User {
     private String password;
 
     private String name;
-    private String type;
+
+    @Enumerated(EnumType.STRING)
+    private UserType type;
 
     @OneToMany(mappedBy = "user")
     private List<Post> posts;
